@@ -4,16 +4,25 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Seattle Forecast</title>
+    <style>
+        .weather-container {
+            font-size: 24px;
+            margin: 20px 0;
+        }
+    </style>
 </head>
 <body>
     <h1>Seattle Forecast</h1>
-    <div id="weather-report"></div>
+    <div id="weather-report" class="weather-container"></div>
     <img src="https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/c3c11a4e-961b-47ec-8f72-acebce4c4562/dg50anz-01b69736-4b8a-43a1-84b8-9d53ce8f8512.png/v1/fill/w_900,h_1195,q_80,strp/anthropomorphic_cat_wearing_red_raincoat_by_coolarts223_dg50anz-fullview.jpg?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7InBhdGgiOiJcL2ZcL2MzYzExYTRlLTk2MWItNDdlYy04ZjcyLWFjZWJjZTRjNDU2MlwvZGc1MGFuei0wMWI2OTczNi00YjhhLTQzYTEtODRiOC05ZDUzY2U4Zjg1MTIucG5nIiwiaGVpZ2h0IjoiPD0xMTk1Iiwid2lkdGgiOiI8PTkwMCJ9XV0sImF1ZCI6WyJ1cm46c2VydmljZTppbWFnZS53YXRlcm1hcmsiXSwid21rIjp7InBhdGgiOiJcL3dtXC9jM2MxMWE0ZS05NjFiLTQ3ZWMtOGY3Mi1hY2ViY2U0YzQ1NjJcL2Nvb2xhcnRzMjIzLTQucG5nIiwib3BhY2l0eSI6OTUsInByb3BvcnRpb25zIjowLjQ1LCJncmF2aXR5IjoiY2VudGVyIn19.s-lAeDwqMvRE_oJwjqa5yBvrBX1kCdsu705jomGDtA8" alt="Cute kitten in the rain">
     <script>
         fetch('weather.json')
             .then(response => response.json())
             .then(data => {
-                document.getElementById('weather-report').innerText = JSON.stringify(data, null, 2);
+                const time = new Date(data.current_time).toLocaleTimeString();
+                const temp = Math.round(data.current_temperature);
+                document.getElementById('weather-report').innerHTML = 
+                    `Current Time: ${time}<br>Temperature: ${temp}°F`;
             })
             .catch(error => {
                 document.getElementById('weather-report').innerText = 'Failed to load weather data';
