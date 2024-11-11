@@ -1,6 +1,4 @@
 import requests
-import schedule
-import time
 import json
 
 def get_seattle_forecast():
@@ -8,15 +6,9 @@ def get_seattle_forecast():
     if response.status_code == 200:
         data = response.json()
         current_weather = data.get("current_weather", {})
-        print(f"Current weather in Seattle: {current_weather}")
         with open("weather.json", "w") as file:
             json.dump(current_weather, file)
     else:
         print("Failed to get the weather data")
 
-schedule.every().hour.do(get_seattle_forecast)
-
-if __name__ == "__main__":
-    while True:
-        schedule.run_pending()
-        time.sleep(1)
+get_seattle_forecast()
