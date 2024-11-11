@@ -19,9 +19,13 @@
     <div id="weather-report" class="weather-container"></div>
     <img src="https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/c3c11a4e-961b-47ec-8f72-acebce4c4562/dg50anz-01b69736-4b8a-43a1-84b8-9d53ce8f8512.png/v1/fill/w_900,h_1195,q_80,strp/anthropomorphic_cat_wearing_red_raincoat_by_coolarts223_dg50anz-fullview.jpg?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7InBhdGgiOiJcL2ZcL2MzYzExYTRlLTk2MWItNDdlYy04ZjcyLWFjZWJjZTRjNDU2MlwvZGc1MGFuei0wMWI2OTczNi00YjhhLTQzYTEtODRiOC05ZDUzY2U4Zjg1MTIucG5nIiwiaGVpZ2h0IjoiPD0xMTk1Iiwid2lkdGgiOiI8PTkwMCJ9XV0sImF1ZCI6WyJ1cm46c2VydmljZTppbWFnZS53YXRlcm1hcmsiXSwid21rIjp7InBhdGgiOiJcL3dtXC9jM2MxMWE0ZS05NjFiLTQ3ZWMtOGY3Mi1hY2ViY2U0YzQ1NjJcL2Nvb2xhcnRzMjIzLTQucG5nIiwib3BhY2l0eSI6OTUsInByb3BvcnRpb25zIjowLjQ1LCJncmF2aXR5IjoiY2VudGVyIn19.s-lAeDwqMvRE_oJwjqa5yBvrBX1kCdsu705jomGDtA8" alt="Cute kitten in the rain">
     <script>
-        fetch('weather.json')
-            .then(response => response.json())
+        fetch('/weather.json')  // Changed from 'weather.json' to '/weather.json'
+            .then(response => {
+                console.log('Response status:', response.status);  // Debug log
+                return response.json();
+            })
             .then(data => {
+                console.log('Received data:', data);  // Debug log
                 let timeStr = 'Unavailable';
                 let tempStr = 'Unavailable';
                 
@@ -41,6 +45,7 @@
                     `Current Time: ${timeStr}<br>Temperature: ${tempStr}`;
             })
             .catch(error => {
+                console.error('Fetch error:', error);  // Debug log
                 document.getElementById('weather-report').innerHTML = 
                     '<span class="error">Failed to load weather data</span>';
                 console.error('Error:', error);

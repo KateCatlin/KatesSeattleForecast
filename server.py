@@ -1,4 +1,4 @@
-from flask import Flask, render_template, send_from_directory
+from flask import Flask, render_template, send_from_directory, jsonify
 import requests
 import os
 import json
@@ -23,7 +23,14 @@ def index():
 
 @app.route("/weather.json")
 def weather_json():
-    return send_from_directory(os.getcwd(), "weather.json")
+    try:
+        with open('weather.json', 'r') as f:
+            data = json.load(f)
+            print("Serving weather data:", data)  # Debug log
+            return jsonify(data)
+    except Exception as e:
+        print("Error reading weather.json:", str(e))  # Debug log
+        return jsonify({"error": str(e)}), 500
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
+    app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)), debug=True)
