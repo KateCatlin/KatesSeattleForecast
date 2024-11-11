@@ -2,6 +2,7 @@ from flask import Flask, render_template, jsonify
 import requests
 from datetime import datetime
 import os
+import pytz
 
 app = Flask(__name__)
 
@@ -12,18 +13,20 @@ def index():
 @app.route('/weather.json')
 def weather_json():
     try:
-        # Fetch weather data directly from API
         url = "https://api.open-meteo.com/v1/forecast?latitude=47.6062&longitude=-122.3321&current=temperature_2m&temperature_unit=fahrenheit"
         response = requests.get(url)
         data = response.json()
         
-        # Format the response data
+        # Get current time in Seattle
+        seattle_tz = pytz.timezone('America/Los_Angeles')
+        seattle_time = datetime.now(seattle_tz)
+        
         weather_data = {
-            "current_time": datetime.now().isoformat(),
+            "current_time": seattle_time.isoformat(),
+            "timezone": "America/Los_Angeles",
             "current_temperature": data['current']['temperature_2m']
         }
         
-        print("Serving weather data:", weather_data)  # Debug log
         return jsonify(weather_data)
         
     except Exception as e:

@@ -45,19 +45,21 @@
     <h1>Seattle Forecast</h1>
     <div id="weather-report" class="weather-container"></div>
     <script>
-        fetch('/weather.json')  // Changed from 'weather.json' to '/weather.json'
-            .then(response => {
-                console.log('Response status:', response.status);  // Debug log
-                return response.json();
-            })
+        fetch('/weather.json')
+            .then(response => response.json())
             .then(data => {
-                console.log('Received data:', data);  // Debug log
                 let timeStr = 'Unavailable';
                 let tempStr = 'Unavailable';
                 
                 if (data.current_time) {
                     try {
-                        timeStr = new Date(data.current_time).toLocaleTimeString();
+                        const options = {
+                            timeZone: data.timezone || 'America/Los_Angeles',
+                            hour: 'numeric',
+                            minute: 'numeric',
+                            hour12: true
+                        };
+                        timeStr = new Date(data.current_time).toLocaleString('en-US', options);
                     } catch (e) {
                         console.error('Error parsing time:', e);
                     }
@@ -68,7 +70,7 @@
                 }
                 
                 document.getElementById('weather-report').innerHTML = 
-                    `Current Time: ${timeStr}<br>Temperature: ${tempStr}`;
+                    `Current Time in Seattle: ${timeStr}<br>Temperature: ${tempStr}`;
             })
             .catch(error => {
                 console.error('Fetch error:', error);  // Debug log
