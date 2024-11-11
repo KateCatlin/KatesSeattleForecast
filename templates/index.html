@@ -101,8 +101,13 @@
             <h3>Is it raining?</h3>
             <p id="rain-status"></p>
         </div>
-        <img src="https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/c3c11a4e-961b-47ec-8f72-acebce4c4562/dg50anz-01b69736-4b8a-43a1-84b8-9d53ce8f8512.png/v1/fill/w_900,h_1195,q_80,strp/anthropomorphic_cat_wearing_red_raincoat_by_coolarts223_dg50anz-fullview.jpg" alt="Cute kitten in rain" class="weather-image">
     </div>
+
+    <div class="section">
+        <h2>What should I wear?</h2>
+        <div id="recommendation-text"></div>
+    </div>
+    <img src="https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/c3c11a4e-961b-47ec-8f72-acebce4c4562/dg50anz-01b69736-4b8a-43a1-84b8-9d53ce8f8512.png/v1/fill/w_900,h_1195,q_80,strp/anthropomorphic_cat_wearing_red_raincoat_by_coolarts223_dg50anz-fullview.jpg" alt="Cute kitten in rain" class="weather-image">
     <script>
         fetch('/weather.json')
             .then(response => response.json())
