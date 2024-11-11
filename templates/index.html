@@ -9,6 +9,9 @@
             font-size: 24px;
             margin: 20px 0;
         }
+        .error {
+            color: red;
+        }
     </style>
 </head>
 <body>
@@ -19,13 +22,28 @@
         fetch('weather.json')
             .then(response => response.json())
             .then(data => {
-                const time = new Date(data.current_time).toLocaleTimeString();
-                const temp = Math.round(data.current_temperature);
+                let timeStr = 'Unavailable';
+                let tempStr = 'Unavailable';
+                
+                if (data.current_time) {
+                    try {
+                        timeStr = new Date(data.current_time).toLocaleTimeString();
+                    } catch (e) {
+                        console.error('Error parsing time:', e);
+                    }
+                }
+                
+                if (typeof data.current_temperature === 'number') {
+                    tempStr = Math.round(data.current_temperature) + '°F';
+                }
+                
                 document.getElementById('weather-report').innerHTML = 
-                    `Current Time: ${time}<br>Temperature: ${temp}°F`;
+                    `Current Time: ${timeStr}<br>Temperature: ${tempStr}`;
             })
             .catch(error => {
-                document.getElementById('weather-report').innerText = 'Failed to load weather data';
+                document.getElementById('weather-report').innerHTML = 
+                    '<span class="error">Failed to load weather data</span>';
+                console.error('Error:', error);
             });
     </script>
 </body>

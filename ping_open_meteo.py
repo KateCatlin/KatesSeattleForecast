@@ -1,14 +1,19 @@
 import requests
 import json
+from datetime import datetime
 
-def get_seattle_forecast():
-    response = requests.get("https://api.open-meteo.com/v1/forecast?latitude=47.6062&longitude=-122.3321&current_weather=true")
-    if response.status_code == 200:
-        data = response.json()
-        current_weather = data.get("current_weather", {})
-        with open("weather.json", "w") as file:
-            json.dump(current_weather, file)
-    else:
-        print("Failed to get the weather data")
+def fetch_weather():
+    url = "https://api.open-meteo.com/v1/forecast?latitude=47.6062&longitude=-122.3321&current=temperature_2m,is_day&temperature_unit=fahrenheit"
+    response = requests.get(url)
+    data = response.json()
+    
+    weather_data = {
+        "current_time": datetime.utcnow().isoformat(),
+        "current_temperature": data['current']['temperature_2m']
+    }
+    
+    with open('weather.json', 'w') as f:
+        json.dump(weather_data, f)
 
-get_seattle_forecast()
+if __name__ == "__main__":
+    fetch_weather()
