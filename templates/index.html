@@ -27,11 +27,16 @@
             text-align: center;
         }
 
+        .image-container {
+            text-align: center;
+            margin: 20px 0;
+        }
+
         img {
             max-width: 100%;
             height: auto;
             border-radius: 10px;
-            margin-top: 20px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
         }
 
         .temperature {
@@ -46,6 +51,12 @@
         .error {
             color: red;
         }
+
+        .error-message {
+            color: red;
+            text-align: center;
+            display: none;
+        }
     </style>
 </head>
 <body>
@@ -54,7 +65,12 @@
         <p class="time">Current Time: {{ weather.current_time if weather else 'Unavailable' }}</p>
         <p class="temperature">Temperature: {{ weather.current_temperature if weather else 'Unavailable' }}°F</p>
     </div>
-    <img src="https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/c3c11a4e-961b-47ec-8f72-acebce4c4562/dg50anz-01b69736-4b8a-43a1-84b8-9d53ce8f8512.png/v1/fill/w_900,h_1195,q_80,strp/anthropomorphic_cat_wearing_red_raincoat_by_coolarts223_dg50anz-fullview.jpg" alt="Cute kitten in the rain">
+    <div class="image-container">
+        <img src="https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/c3c11a4e-961b-47ec-8f72-acebce4c4562/dg50anz-01b69736-4b8a-43a1-84b8-9d53ce8f8512.png" 
+             alt="Cute kitten in the rain"
+             onerror="this.onerror=null; this.src='https://placekitten.com/400/500'; document.getElementById('error-message').style.display='block';">
+        <p id="error-message" class="error-message">Original image failed to load, showing fallback kitten image</p>
+    </div>
     <script>
         fetch('/weather.json')  // Changed from 'weather.json' to '/weather.json'
             .then(response => {
@@ -87,6 +103,12 @@
                     '<span class="error">Failed to load weather data</span>';
                 console.error('Error:', error);
             });
+
+        // Verify image loading
+        const img = document.querySelector('img');
+        img.addEventListener('load', function() {
+            console.log('Image loaded successfully');
+        });
     </script>
 </body>
 </html>
