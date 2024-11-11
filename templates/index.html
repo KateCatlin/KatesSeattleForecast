@@ -82,11 +82,6 @@
 </head>
 <body>
     <h1>Seattle Forecast</h1>
-    <div id="weather-report" class="weather-container"></div>
-    <div id="clothing-recommendation" class="recommendation-container">
-        <h2>What to Wear</h2>
-        <div id="recommendation-text"></div>
-    </div>
     <div class="section">
         <h2>Current weather</h2>
         <div class="subsection">
@@ -104,7 +99,7 @@
     </div>
 
     <div class="section">
-        <h2>What should I wear?</h2>
+        <h2>What to Wear</h2>
         <div id="recommendation-text"></div>
     </div>
     <img src="https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/c3c11a4e-961b-47ec-8f72-acebce4c4562/dg50anz-01b69736-4b8a-43a1-84b8-9d53ce8f8512.png/v1/fill/w_900,h_1195,q_80,strp/anthropomorphic_cat_wearing_red_raincoat_by_coolarts223_dg50anz-fullview.jpg" alt="Cute kitten in rain" class="weather-image">
@@ -138,28 +133,20 @@
                     rainStr = data.is_raining ? 'Yes' : 'No';
                 }
                 
-                document.getElementById('weather-report').innerHTML = 
-                    `Current Time in Seattle: ${timeStr}<br>
-                    Temperature: ${tempStr}<br>
-                    Currently Raining: <span class="rain-status">${rainStr}</span>`;
+                // Update weather information
+                document.getElementById('current-time').innerText = timeStr;
+                document.getElementById('temperature').innerText = tempStr;
+                document.getElementById('rain-status').innerText = rainStr;
                 
                 // Add clothing recommendation
                 const recommendationText = data.clothing_recommendation || 'No recommendation available';
                 document.getElementById('recommendation-text').innerHTML = 
                     `<span class="recommendation">${recommendationText}</span>`;
-
-                // Update new section
-                document.getElementById('current-time').innerText = timeStr;
-                document.getElementById('temperature').innerText = tempStr;
-                document.getElementById('rain-status').innerText = rainStr;
             })
             .catch(error => {
-                console.error('Fetch error:', error);  // Debug log
-                document.getElementById('weather-report').innerHTML = 
-                    '<span class="error">Failed to load weather data</span>';
                 console.error('Error:', error);
                 document.getElementById('recommendation-text').innerHTML = 
-                    '<span class="error">Failed to load recommendation</span>';
+                    '<span class="error">Failed to load weather data</span>';
             });
     </script>
 </body>
