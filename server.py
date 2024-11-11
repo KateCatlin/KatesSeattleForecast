@@ -22,11 +22,25 @@ def weather_json():
         seattle_tz = pytz.timezone('America/Los_Angeles')
         seattle_time = datetime.now(seattle_tz)
         
+        temp = data['current']['temperature_2m']
+        is_raining = data['current']['precipitation'] > 0
+        
+        # Determine clothing recommendation
+        if is_raining:
+            clothing = "rain jacket"
+        elif temp > 70:
+            clothing = "tee shirt"
+        elif temp > 50:
+            clothing = "sweatshirt"
+        else:
+            clothing = "good coat"
+            
         weather_data = {
             "current_time": seattle_time.isoformat(),
             "timezone": "America/Los_Angeles",
-            "current_temperature": data['current']['temperature_2m'],
-            "is_raining": data['current']['precipitation'] > 0
+            "current_temperature": temp,
+            "is_raining": is_raining,
+            "clothing_recommendation": clothing
         }
         
         return jsonify(weather_data)

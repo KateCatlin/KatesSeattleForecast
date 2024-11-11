@@ -44,11 +44,29 @@
             color: #3498db;
             font-style: italic;
         }
+
+        .recommendation-container {
+            font-size: 24px;
+            margin: 20px 0;
+            padding: 20px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .recommendation {
+            color: #8e44ad;
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
     <h1>Seattle Forecast</h1>
     <div id="weather-report" class="weather-container"></div>
+    <div id="clothing-recommendation" class="recommendation-container">
+        <h2>What to Wear</h2>
+        <div id="recommendation-text"></div>
+    </div>
     <script>
         fetch('/weather.json')
             .then(response => response.json())
@@ -83,12 +101,19 @@
                     `Current Time in Seattle: ${timeStr}<br>
                     Temperature: ${tempStr}<br>
                     Currently Raining: <span class="rain-status">${rainStr}</span>`;
+                
+                // Add clothing recommendation
+                const recommendationText = data.clothing_recommendation || 'No recommendation available';
+                document.getElementById('recommendation-text').innerHTML = 
+                    `<span class="recommendation">${recommendationText}</span>`;
             })
             .catch(error => {
                 console.error('Fetch error:', error);  // Debug log
                 document.getElementById('weather-report').innerHTML = 
                     '<span class="error">Failed to load weather data</span>';
                 console.error('Error:', error);
+                document.getElementById('recommendation-text').innerHTML = 
+                    '<span class="error">Failed to load recommendation</span>';
             });
     </script>
 </body>
