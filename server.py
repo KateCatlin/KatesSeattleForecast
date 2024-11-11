@@ -13,7 +13,8 @@ def index():
 @app.route('/weather.json')
 def weather_json():
     try:
-        url = "https://api.open-meteo.com/v1/forecast?latitude=47.6062&longitude=-122.3321&current=temperature_2m&temperature_unit=fahrenheit"
+        # Updated URL to include precipitation data
+        url = "https://api.open-meteo.com/v1/forecast?latitude=47.6062&longitude=-122.3321&current=temperature_2m,precipitation&temperature_unit=fahrenheit"
         response = requests.get(url)
         data = response.json()
         
@@ -24,7 +25,8 @@ def weather_json():
         weather_data = {
             "current_time": seattle_time.isoformat(),
             "timezone": "America/Los_Angeles",
-            "current_temperature": data['current']['temperature_2m']
+            "current_temperature": data['current']['temperature_2m'],
+            "is_raining": data['current']['precipitation'] > 0
         }
         
         return jsonify(weather_data)

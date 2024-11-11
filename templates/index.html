@@ -39,6 +39,11 @@
         .error {
             color: red;
         }
+
+        .rain-status {
+            color: #3498db;
+            font-style: italic;
+        }
     </style>
 </head>
 <body>
@@ -50,6 +55,7 @@
             .then(data => {
                 let timeStr = 'Unavailable';
                 let tempStr = 'Unavailable';
+                let rainStr = 'Unknown';
                 
                 if (data.current_time) {
                     try {
@@ -69,8 +75,14 @@
                     tempStr = Math.round(data.current_temperature) + '°F';
                 }
                 
+                if (typeof data.is_raining === 'boolean') {
+                    rainStr = data.is_raining ? 'Yes' : 'No';
+                }
+                
                 document.getElementById('weather-report').innerHTML = 
-                    `Current Time in Seattle: ${timeStr}<br>Temperature: ${tempStr}`;
+                    `Current Time in Seattle: ${timeStr}<br>
+                    Temperature: ${tempStr}<br>
+                    Currently Raining: <span class="rain-status">${rainStr}</span>`;
             })
             .catch(error => {
                 console.error('Fetch error:', error);  // Debug log
