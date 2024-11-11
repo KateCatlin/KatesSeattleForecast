@@ -27,13 +27,13 @@ def weather_json():
         
         # Determine clothing recommendation
         if is_raining:
-            clothing = "rain jacket"
+            clothing = "Girlfriend wear a rain jacket! It's raining!"
         elif temp > 70:
-            clothing = "tee shirt"
+            clothing = "Go with a tee-shirt, so hot right now!"
         elif temp > 50:
-            clothing = "sweatshirt"
+            clothing = "It's a little chilly but you're a tough Seattleite, you can handle it. Go for a sweatshirt."
         else:
-            clothing = "good coat"
+            clothing = "The weather outside is frightful, stop being impractical and wear a coat."
             
         weather_data = {
             "current_time": seattle_time.isoformat(),
