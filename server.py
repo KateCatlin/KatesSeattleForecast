@@ -1,36 +1,35 @@
-from flask import Flask, render_template, send_from_directory, jsonify
+from flask import Flask, render_template, jsonify
 import requests
+from datetime import datetime
 import os
-import json
 
 app = Flask(__name__)
 
-def get_seattle_forecast():
-    response = requests.get("https://api.open-meteo.com/v1/forecast?latitude=47.6062&longitude=-122.3321&current_weather=true")
-    if response.status_code == 200:
-        data = response.json()
-        current_weather = data.get("current_weather", {})
-        with open("weather.json", "w") as file:
-            json.dump(current_weather, file)
-        return current_weather
-    else:
-        return None
-
-@app.route("/")
+@app.route('/')
 def index():
-    weather = get_seattle_forecast()
-    return render_template("index.html", weather=weather)
+    return render_template('index.html')
 
-@app.route("/weather.json")
+@app.route('/weather.json')
 def weather_json():
     try:
-        with open('weather.json', 'r') as f:
-            data = json.load(f)
-            print("Serving weather data:", data)  # Debug log
-            return jsonify(data)
+        # Fetch weather data directly from API
+        url = "https://api.open-meteo.com/v1/forecast?latitude=47.6062&longitude=-122.3321&current=temperature_2m&temperature_unit=fahrenheit"
+        response = requests.get(url)
+        data = response.json()
+        
+        # Format the response data
+        weather_data = {
+            "current_time": datetime.now().isoformat(),
+            "current_temperature": data['current']['temperature_2m']
+        }
+        
+        print("Serving weather data:", weather_data)  # Debug log
+        return jsonify(weather_data)
+        
     except Exception as e:
-        print("Error reading weather.json:", str(e))  # Debug log
+        print("Error fetching weather:", str(e))  # Debug log
         return jsonify({"error": str(e)}), 500
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)), debug=True)
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port)
