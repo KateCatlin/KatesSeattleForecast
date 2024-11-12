@@ -43,7 +43,7 @@ def weather_json():
         elif temp > 55:
             clothing = "It's a little chilly but you're a tough Seattleite, you can handle it. Go for a sweatshirt."
         else:
-            clothing = "It's gross out. Wear a coat."
+            clothing = "It's cold out. Wear a coat."
             
         # Get sunset data
         try:
