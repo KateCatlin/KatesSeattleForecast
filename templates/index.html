@@ -102,7 +102,7 @@
         // Fetch weather data
         Promise.all([
             fetch('/weather.json'),
-            fetch('https://api.sunrisesunset.io/json?lat=47.6062&lng=-122.3321') // Seattle coordinates
+            fetch('/sunset.json')
         ])
         .then(async ([weatherResponse, sunsetResponse]) => {
             const weatherData = await weatherResponse.json();

@@ -3,6 +3,8 @@ import requests
 from datetime import datetime
 import os
 import pytz
+import json
+from ping_sunset import fetch_sunset_data
 
 app = Flask(__name__)
 
@@ -48,6 +50,15 @@ def weather_json():
     except Exception as e:
         print("Error fetching weather:", str(e))  # Debug log
         return jsonify({"error": str(e)}), 500
+
+@app.route('/sunset.json')
+def get_sunset():
+    try:
+        with open('sunset.json', 'r') as f:
+            return jsonify(json.load(f))
+    except FileNotFoundError:
+        data = fetch_sunset_data()
+        return jsonify(data if data else {"error": "Unable to fetch sunset data"})
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
