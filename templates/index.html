@@ -88,6 +88,10 @@
             <h3>Is it raining?</h3>
             <p id="rain-status"></p>
         </div>
+        <div class="subsection">
+            <h3>Sunset Time</h3>
+            <p id="sunset-time"></p>
+        </div>
     </div>
 
     <div class="section">
@@ -95,50 +99,64 @@
         <div id="recommendation-text"></div>
     </div>
     <script>
-        fetch('/weather.json')
-            .then(response => response.json())
-            .then(data => {
-                let timeStr = 'Unavailable';
-                let tempStr = 'Unavailable';
-                let rainStr = 'Unknown';
-                
-                if (data.current_time) {
-                    try {
-                        const options = {
-                            timeZone: data.timezone || 'America/Los_Angeles',
-                            hour: 'numeric',
-                            minute: 'numeric',
-                            hour12: true
-                        };
-                        timeStr = new Date(data.current_time).toLocaleString('en-US', options);
-                    } catch (e) {
-                        console.error('Error parsing time:', e);
-                    }
+        // Fetch weather data
+        Promise.all([
+            fetch('/weather.json'),
+            fetch('https://api.sunrisesunset.io/json?lat=47.6062&lng=-122.3321') // Seattle coordinates
+        ])
+        .then(async ([weatherResponse, sunsetResponse]) => {
+            const weatherData = await weatherResponse.json();
+            const sunsetData = await sunsetResponse.json();
+            
+            let timeStr = 'Unavailable';
+            let tempStr = 'Unavailable';
+            let rainStr = 'Unknown';
+            let sunsetStr = 'Unavailable';
+
+            // Handle weather data
+            if (weatherData.current_time) {
+                try {
+                    const options = {
+                        timeZone: weatherData.timezone || 'America/Los_Angeles',
+                        hour: 'numeric',
+                        minute: 'numeric',
+                        hour12: true
+                    };
+                    timeStr = new Date(weatherData.current_time).toLocaleString('en-US', options);
+                } catch (e) {
+                    console.error('Error parsing time:', e);
                 }
-                
-                if (typeof data.current_temperature === 'number') {
-                    tempStr = Math.round(data.current_temperature) + '°F';
-                }
-                
-                if (typeof data.is_raining === 'boolean') {
-                    rainStr = data.is_raining ? 'Yes' : 'No';
-                }
-                
-                // Update weather information
-                document.getElementById('current-time').innerText = timeStr;
-                document.getElementById('temperature').innerText = tempStr;
-                document.getElementById('rain-status').innerText = rainStr;
-                
-                // Add clothing recommendation
-                const recommendationText = data.clothing_recommendation || 'No recommendation available';
-                document.getElementById('recommendation-text').innerHTML = 
-                    `<span class="recommendation">${recommendationText}</span>`;
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                document.getElementById('recommendation-text').innerHTML = 
-                    '<span class="error">Failed to load weather data</span>';
-            });
+            }
+            
+            // Handle sunset data
+            if (sunsetData.results && sunsetData.results.sunset) {
+                sunsetStr = sunsetData.results.sunset;
+            }
+
+            if (typeof weatherData.current_temperature === 'number') {
+                tempStr = Math.round(weatherData.current_temperature) + '°F';
+            }
+            
+            if (typeof weatherData.is_raining === 'boolean') {
+                rainStr = weatherData.is_raining ? 'Yes' : 'No';
+            }
+            
+            // Update weather information
+            document.getElementById('current-time').innerText = timeStr;
+            document.getElementById('temperature').innerText = tempStr;
+            document.getElementById('rain-status').innerText = rainStr;
+            document.getElementById('sunset-time').innerText = sunsetStr;
+            
+            // Add clothing recommendation
+            const recommendationText = weatherData.clothing_recommendation || 'No recommendation available';
+            document.getElementById('recommendation-text').innerHTML = 
+                `<span class="recommendation">${recommendationText}</span>`;
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            document.getElementById('recommendation-text').innerHTML = 
+                '<span class="error">Failed to load weather data</span>';
+        });
     </script>
 </body>
 </html>
