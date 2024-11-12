@@ -171,14 +171,10 @@
                 `<span class="recommendation">${recommendationText}</span>`;
 
             // Change background image based on conditions
-            const isAfterSunrise = sunsetData.results && sunsetData.results.is_after_sunrise;
-    
-            if (isAfterSunrise) {
-                if (!weatherData.is_raining && sunsetData.results.time_until_sunset === 'after_sunset') {
-                    document.body.style.backgroundImage = "url('https://img.goodfon.com/original/2048x1373/a/3d/usa-washington-seattle-space-978.jpg')";
-                } else if (weatherData.is_raining && sunsetData.results.time_until_sunset !== 'after_sunset') {
-                    document.body.style.backgroundImage = "url('https://live.staticflickr.com/52/151015066_0b01e61a20_b.jpg')";
-                }
+            if (sunsetData.results && sunsetData.results.is_nighttime && !weatherData.is_raining) {
+                document.body.style.backgroundImage = "url('https://img.goodfon.com/original/2048x1373/a/3d/usa-washington-seattle-space-978.jpg')";
+            } else if (weatherData.is_raining && !sunsetData.results.is_nighttime) {
+                document.body.style.backgroundImage = "url('https://live.staticflickr.com/52/151015066_0b01e61a20_b.jpg')";
             }
         })
         .catch(error => {
