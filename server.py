@@ -52,7 +52,7 @@ def weather_json():
                 
             # Add lighting recommendation based on sunset
             if sunset_data.get('results', {}).get('time_until_sunset') == 'after_sunset':
-                clothing += " Also it's dark out, bring a headlamp."
+                clothing += " Also it's dark, bring a headlamp."
             elif sunset_data.get('results', {}).get('minutes_until_sunset', float('inf')) <= 30:
                 clothing += " Also, it's getting dark out, you may want to bring a headlamp."
             elif not is_raining:
