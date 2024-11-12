@@ -175,6 +175,8 @@
                 document.body.style.backgroundImage = "url('https://img.goodfon.com/original/2048x1373/a/3d/usa-washington-seattle-space-978.jpg')";
             } else if (weatherData.is_raining && !sunsetData.results.is_nighttime) {
                 document.body.style.backgroundImage = "url('https://live.staticflickr.com/52/151015066_0b01e61a20_b.jpg')";
+            } else if (!weatherData.is_raining && !sunsetData.results.is_nighttime) {
+                document.body.style.backgroundImage = "url('https://upload.wikimedia.org/wikipedia/commons/a/a8/Downtown_Seattle_seen_from_Bainbridge_Island.jpg')";
             }
         })
         .catch(error => {
