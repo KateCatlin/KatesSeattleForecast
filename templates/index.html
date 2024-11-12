@@ -11,6 +11,21 @@
             margin: 0 auto;
             padding: 20px;
             background-color: #f0f8ff;
+            position: relative;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            background-size: cover;
+            background-position: center;
+        }
+
+        .background-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to bottom, rgba(0, 0, 0, 0) 70%, rgba(0, 0, 0, 0.5) 85%, black 100%);
+            z-index: -1;
         }
         
         .weather-container, .recommendation-container, .section, .title-container {
@@ -56,12 +71,13 @@
     </style>
 </head>
 <body>
+    <div class="background-overlay"></div>
     <div class="title-container">
         <h1>What to wear for a walk in Seattle</h1>
     </div>
     
     <div class="section">
-        <h2>What to Wear</h2>
+        <h2>TL;DR</h2>
         <div id="recommendation-text"></div>
     </div>
 
@@ -157,8 +173,6 @@
             // Change background image if not raining and after sunset
             if (!weatherData.is_raining && sunsetData.results.time_until_sunset === 'after_sunset') {
                 document.body.style.backgroundImage = "url('https://img.goodfon.com/original/2048x1373/a/3d/usa-washington-seattle-space-978.jpg')";
-                document.body.style.backgroundSize = "cover";
-                document.body.style.backgroundPosition = "center";
             }
         })
         .catch(error => {
