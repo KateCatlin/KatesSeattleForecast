@@ -151,6 +151,13 @@
             const recommendationText = weatherData.clothing_recommendation || 'No recommendation available';
             document.getElementById('recommendation-text').innerHTML = 
                 `<span class="recommendation">${recommendationText}</span>`;
+
+            // Change background image if not raining and after sunset
+            if (!weatherData.is_raining && sunsetData.results.time_until_sunset === 'after_sunset') {
+                document.body.style.backgroundImage = "url('https://img.goodfon.com/original/2048x1373/a/3d/usa-washington-seattle-space-978.jpg')";
+                document.body.style.backgroundSize = "cover";
+                document.body.style.backgroundPosition = "center";
+            }
         })
         .catch(error => {
             console.error('Error:', error);
