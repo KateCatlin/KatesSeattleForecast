@@ -92,6 +92,10 @@
             <h3>Sunset Time</h3>
             <p id="sunset-time"></p>
         </div>
+        <div class="subsection">
+            <h3>Time Until Sunset</h3>
+            <p id="time-until-sunset"></p>
+        </div>
     </div>
 
     <div class="section">
@@ -146,6 +150,17 @@
             document.getElementById('temperature').innerText = tempStr;
             document.getElementById('rain-status').innerText = rainStr;
             document.getElementById('sunset-time').innerText = sunsetStr;
+
+            // Handle time until sunset
+            if (sunsetData.results) {
+                const timeUntilSunset = sunsetData.results.time_until_sunset;
+                const sunsetEl = document.getElementById('time-until-sunset');
+                if (timeUntilSunset === 'after_sunset') {
+                    sunsetEl.innerText = 'Too late! The sun has already set.';
+                } else {
+                    sunsetEl.innerText = timeUntilSunset;
+                }
+            }
             
             // Add clothing recommendation
             const recommendationText = weatherData.clothing_recommendation || 'No recommendation available';
