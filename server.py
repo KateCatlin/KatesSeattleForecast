@@ -28,14 +28,22 @@ def weather_json():
         is_raining = data['current']['precipitation'] > 0
         
         # Determine clothing recommendation
-        if is_raining:
+        if temp <= 32 and is_raining:
+            clothing = "It's snowing! Wear a ski jacket!"
+        elif temp <= 40 and is_raining:
+            clothing = "Wear every layer you got and a great rain jacket."
+        elif temp <= 40:
+            clothing = "It's very cold, bundle up with a bunch of layers."
+        elif temp <= 55 and is_raining:
+            clothing = "It's gross and wet outside. Wear a puffy jacket and a raincoat."
+        elif is_raining:
             clothing = "Hey pal, wear a rain jacket! It's raining!"
         elif temp > 70:
             clothing = "Go with a tee-shirt, so hot right now!"
-        elif temp > 50:
+        elif temp > 55:
             clothing = "It's a little chilly but you're a tough Seattleite, you can handle it. Go for a sweatshirt."
         else:
-            clothing = "The weather outside is frightful. Stop being impractical and wear a coat."
+            clothing = "It's gross out. Wear a coat."
             
         # Get sunset data
         try:
@@ -48,7 +56,7 @@ def weather_json():
             elif sunset_data.get('results', {}).get('minutes_until_sunset', float('inf')) <= 30:
                 clothing += " Also, it's getting dark out, you may want to bring a headlamp."
             elif not is_raining:
-                clothing += "Wear your sunglasses."
+                clothing += " Wear your sunglasses."
                 
         except (FileNotFoundError, json.JSONDecodeError):
             pass  # If sunset data isn't available, skip the lighting recommendation
