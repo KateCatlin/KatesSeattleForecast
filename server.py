@@ -37,6 +37,22 @@ def weather_json():
         else:
             clothing = "The weather outside is frightful. Stop being impractical and wear a coat."
             
+        # Get sunset data
+        try:
+            with open('sunset.json', 'r') as f:
+                sunset_data = json.load(f)
+                
+            # Add lighting recommendation based on sunset
+            if sunset_data.get('results', {}).get('time_until_sunset') == 'after_sunset':
+                clothing += " It's dark out, bring a headlamp."
+            elif sunset_data.get('results', {}).get('minutes_until_sunset', float('inf')) <= 30:
+                clothing += " It's getting dark out, you may want to bring a headlamp."
+            elif not is_raining:
+                clothing += " Wear your sunglasses."
+                
+        except (FileNotFoundError, json.JSONDecodeError):
+            pass  # If sunset data isn't available, skip the lighting recommendation
+            
         weather_data = {
             "current_time": seattle_time.isoformat(),
             "timezone": "America/Los_Angeles",

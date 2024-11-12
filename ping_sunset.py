@@ -43,8 +43,11 @@ def fetch_sunset_data():
                 minutes = (time_diff.seconds % 3600) // 60
                 time_until = f"{hours} hours and {minutes} minutes until sunset"
                 data['results']['time_until_sunset'] = time_until
+                # Add total minutes until sunset for easy comparison
+                data['results']['minutes_until_sunset'] = hours * 60 + minutes
             else:
                 data['results']['time_until_sunset'] = 'after_sunset'
+                data['results']['minutes_until_sunset'] = 0
         
         # Save to a JSON file
         with open('sunset.json', 'w') as f:
