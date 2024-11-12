@@ -1,4 +1,3 @@
-
 import requests
 import json
 from datetime import datetime
@@ -14,6 +13,13 @@ def fetch_sunset_data():
     try:
         response = requests.get(url)
         data = response.json()
+        
+        # Format sunset time to remove seconds
+        if data.get('results', {}).get('sunset'):
+            # Parse the time string
+            sunset_time = datetime.strptime(data['results']['sunset'], '%I:%M:%S %p')
+            # Format to hours and minutes only
+            data['results']['sunset'] = sunset_time.strftime('%I:%M %p')
         
         # Save to a JSON file
         with open('sunset.json', 'w') as f:
