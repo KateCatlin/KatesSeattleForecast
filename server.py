@@ -6,6 +6,9 @@ import pytz
 import json
 from ping_sunset import fetch_sunset_data
 from openai import OpenAI
+from dotenv import load_dotenv
+
+load_dotenv()
 
 app = Flask(__name__)
 client = OpenAI(api_key=os.getenv('OPENAI_API_KEY'))
