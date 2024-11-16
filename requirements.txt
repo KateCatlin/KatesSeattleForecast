@@ -2,3 +2,4 @@ Flask
 requests==2.31.0
 schedule
 pytz
+openai==1.3.0

@@ -5,8 +5,30 @@ import os
 import pytz
 import json
 from ping_sunset import fetch_sunset_data
+from openai import OpenAI
 
 app = Flask(__name__)
+client = OpenAI(api_key=os.getenv('OPENAI_API_KEY'))
+
+def generate_weather_description(temp, is_raining):
+    prompt = f"""Generate a casual, friendly one-sentence clothing recommendation for Seattle weather.
+    Current temperature: {temp}°F
+    Is it raining: {'Yes' if is_raining else 'No'}
+    Make it somewhat humorous and very specific to Seattle culture.
+    Keep it under 100 characters."""
+
+    try:
+        response = client.chat.completions.create(
+            model="gpt-3.5-turbo",
+            messages=[{"role": "user", "content": prompt}],
+            max_tokens=60,
+            temperature=0.7
+        )
+        return response.choices[0].message.content.strip()
+    except Exception as e:
+        print(f"Error generating AI description: {e}")
+        # Fallback to basic recommendation
+        return "Dress for typical Seattle weather!" 
 
 @app.route('/')
 def index():
@@ -27,23 +49,8 @@ def weather_json():
         temp = data['current']['temperature_2m']
         is_raining = data['current']['precipitation'] > 0
         
-        # Determine clothing recommendation
-        if temp <= 32 and is_raining:
-            clothing = "It's snowing! Wear a ski jacket!"
-        elif temp <= 40 and is_raining:
-            clothing = "Wear every layer you got and a great rain jacket."
-        elif temp <= 40:
-            clothing = "It's very cold, bundle up with a bunch of layers."
-        elif temp <= 55 and is_raining:
-            clothing = "It's gross and wet outside. Wear a puffy jacket and a raincoat."
-        elif is_raining:
-            clothing = "Hey pal, wear a rain jacket! It's raining!"
-        elif temp > 70:
-            clothing = "Go with a tee-shirt, so hot right now!"
-        elif temp > 55:
-            clothing = "It's a little chilly but you're a tough Seattleite, you can handle it. Go for a sweatshirt."
-        else:
-            clothing = "It's cold out. Wear a coat."
+        # Replace the static clothing recommendations with AI-generated ones
+        clothing = generate_weather_description(temp, is_raining)
             
         # Get sunset data
         try:
