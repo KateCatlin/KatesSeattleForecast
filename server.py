@@ -5,7 +5,6 @@ import os
 import pytz
 import json
 from ping_sunset import fetch_sunset_data
-import cohere
 from dotenv import load_dotenv
 from azure.ai.inference import ChatCompletionsClient
 from azure.ai.inference.models import SystemMessage, UserMessage
@@ -27,7 +26,7 @@ print(f"GitHub token present: {'Yes' if os.getenv('GITHUB_TOKEN') else 'No'}")
 def get_time_context():
     try:
         sunset_data = fetch_sunset_data()  # Get fresh data
-        
+
         time_until_sunset = sunset_data.get('results', {}).get('time_until_sunset')
         minutes_until_sunset = sunset_data.get('results', {}).get('minutes_until_sunset')
         
