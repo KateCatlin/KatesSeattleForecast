@@ -83,6 +83,25 @@
         .ai-attribution a:hover {
             text-decoration: underline;
         }
+
+        .loader {
+            border: 4px solid #f3f3f3;
+            border-radius: 50%;
+            border-top: 4px solid #3498db;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .hidden {
+            display: none;
+        }
     </style>
 </head>
 <body>
@@ -93,7 +112,9 @@
     
     <div class="section">
         <h2>TL;DR</h2>
-        <div id="recommendation-text"></div>
+        <div id="recommendation-text">
+            <div id="loading-spinner" class="loader"></div>
+        </div>
         <div id="clothing-recommendation">
             <p class="tldr"></p>
             <p class="ai-attribution"><i>This outfit suggestion was AI-generated using a model from the <a href="https://github.com/marketplace/models" target="_blank" rel="noopener noreferrer">GitHub Models Marketplace</a>.</i></p>
@@ -186,6 +207,8 @@
             
             // Add clothing recommendation
             const recommendationText = weatherData.clothing_recommendation || 'No recommendation available';
+            const loadingSpinner = document.getElementById('loading-spinner');
+            loadingSpinner.classList.add('hidden');
             document.getElementById('recommendation-text').innerHTML = 
                 `<span class="recommendation">${recommendationText}</span>`;
 
