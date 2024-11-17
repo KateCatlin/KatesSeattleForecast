@@ -26,9 +26,8 @@ print(f"GitHub token present: {'Yes' if os.getenv('GITHUB_TOKEN') else 'No'}")
 
 def get_time_context():
     try:
-        with open('sunset.json', 'r') as f:
-            sunset_data = json.load(f)
-            
+        sunset_data = fetch_sunset_data()  # Get fresh data
+        
         time_until_sunset = sunset_data.get('results', {}).get('time_until_sunset')
         minutes_until_sunset = sunset_data.get('results', {}).get('minutes_until_sunset')
         
@@ -123,19 +122,8 @@ def weather_json():
 # In server.py, add debug prints
 @app.route('/sunset.json')
 def get_sunset():
-    try:
-        with open('sunset.json', 'r') as f:
-            data = json.load(f)
-            # Add debug prints
-            seattle_tz = pytz.timezone('America/Los_Angeles')
-            current_time = datetime.now(seattle_tz)
-            print(f"Current time (Seattle): {current_time}")
-            print(f"Sunset data: {json.dumps(data, indent=2)}")
-            return jsonify(data)
-    except FileNotFoundError:
-        data = fetch_sunset_data()
-        print(f"Fresh sunset data: {json.dumps(data, indent=2)}")
-        return jsonify(data if data else {"error": "Unable to fetch sunset data"})
+    data = fetch_sunset_data()  # Get fresh data every time
+    return jsonify(data if data else {"error": "Unable to fetch sunset data"})
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5001))  # Changed from 5000 to 5001
