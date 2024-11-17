@@ -138,6 +138,14 @@ def get_sunset():
     data = get_cached_sunset()  # Get fresh data every time
     return jsonify(data if data else {"error": "Unable to fetch sunset data"})
 
+@app.errorhandler(Exception)
+def handle_error(error):
+    if "azure.ai.inference" in str(error):
+        return jsonify({
+            "error": "AI service temporarily unavailable",
+            "fallback_suggestion": "Layer up, it's Seattle after all!"
+        }), 503
+
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5001))  # Changed from 5000 to 5001
     app.run(host="0.0.0.0", port=port)
