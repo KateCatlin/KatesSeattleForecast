@@ -9,6 +9,8 @@ from dotenv import load_dotenv
 from azure.ai.inference import ChatCompletionsClient
 from azure.ai.inference.models import SystemMessage, UserMessage
 from azure.core.credentials import AzureKeyCredential
+from functools import lru_cache
+import time
 
 load_dotenv()
 
@@ -20,9 +22,23 @@ client = ChatCompletionsClient(
     credential=AzureKeyCredential(os.getenv('GITHUB_TOKEN')),
 )
 
+@lru_cache(maxsize=1)
+def get_cached_weather():
+    url = "https://api.open-meteo.com/v1/forecast?latitude=47.6062&longitude=-122.3321&current=temperature_2m,precipitation&temperature_unit=fahrenheit"
+    response = requests.get(url)
+    return response.json()
+
+@lru_cache(maxsize=1)
+def get_cached_sunset():
+    return fetch_sunset_data()
+
+def get_weather_with_cache():
+    current_time = int(time.time() / 300)  # Changes every 5 minutes
+    return get_cached_weather()
+
 def get_time_context():
     try:
-        sunset_data = fetch_sunset_data()  # Get fresh data
+        sunset_data = get_cached_sunset()  # Get fresh data
 
         time_until_sunset = sunset_data.get('results', {}).get('time_until_sunset')
         minutes_until_sunset = sunset_data.get('results', {}).get('minutes_until_sunset')
@@ -37,12 +53,15 @@ def get_time_context():
         return "during daylight"  # default fallback
 
 def generate_weather_description(temp, is_raining):
-    time_context = get_time_context()
+    # Cache key components
+    cache_key = f"{temp}_{is_raining}_{get_time_context()}"
     
-    prompt = f"""Context: Seattle weather conditions
+    @lru_cache(maxsize=32)
+    def get_cached_description(key):
+        prompt = f"""Context: Seattle weather conditions
 Temperature: {temp}°F
 Raining: {'Yes' if is_raining else 'No'}
-Lighting: {time_context}
+Lighting: {get_time_context()}
 
 Generate ONE casual clothing recommendation for a Seattleite that:
 - Considers temperature, rain, and whether it's dark out
@@ -62,18 +81,19 @@ Generate ONE casual clothing recommendation for a Seattleite that:
 - Stays under 100 characters
 - Incorporates the lighting gear naturally into the suggestion"""
     
-    response = client.complete(
-        messages=[
-            SystemMessage(content="You are a Seattle local who gives practical and witty weather advice, always considering safety and visibility."),
-            UserMessage(content=prompt),
-        ],
-        temperature=1.0,  # Controls randomness
-        top_p=0.9,       # Controls diversity of word choice
-        max_tokens=60,
-        model=model_name
-    )
+        response = client.complete(
+            messages=[
+                SystemMessage(content="You are a Seattle local who gives practical and witty weather advice, always considering safety and visibility."),
+                UserMessage(content=prompt),
+            ],
+            temperature=1.0,  # Controls randomness
+            top_p=0.9,       # Controls diversity of word choice
+            max_tokens=60,
+            model=model_name
+        )
+        return response.choices[0].message.content
     
-    return response.choices[0].message.content
+    return get_cached_description(cache_key)
 
 @app.route('/')
 def index():
@@ -83,11 +103,8 @@ def index():
 @app.route('/weather.json')
 def weather_json():
     try:
-        # Updated URL to include precipitation data
-        url = "https://api.open-meteo.com/v1/forecast?latitude=47.6062&longitude=-122.3321&current=temperature_2m,precipitation&temperature_unit=fahrenheit"
-        response = requests.get(url)
-        data = response.json()
-        
+        data = get_weather_with_cache()
+        # Rest of your code
         # Get current time in Seattle
         seattle_tz = pytz.timezone('America/Los_Angeles')
         seattle_time = datetime.now(seattle_tz)
@@ -118,7 +135,7 @@ def weather_json():
 # In server.py, add debug prints
 @app.route('/sunset.json')
 def get_sunset():
-    data = fetch_sunset_data()  # Get fresh data every time
+    data = get_cached_sunset()  # Get fresh data every time
     return jsonify(data if data else {"error": "Unable to fetch sunset data"})
 
 if __name__ == "__main__":
