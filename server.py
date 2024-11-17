@@ -24,15 +24,39 @@ client = ChatCompletionsClient(
 # Add to server.py temporarily
 print(f"GitHub token present: {'Yes' if os.getenv('GITHUB_TOKEN') else 'No'}")
 
+def get_time_context():
+    try:
+        with open('sunset.json', 'r') as f:
+            sunset_data = json.load(f)
+            
+        time_until_sunset = sunset_data.get('results', {}).get('time_until_sunset')
+        minutes_until_sunset = sunset_data.get('results', {}).get('minutes_until_sunset')
+        
+        if time_until_sunset == 'after_sunset':
+            return "after sunset"
+        elif minutes_until_sunset and minutes_until_sunset <= 30:
+            return "near sunset"
+        else:
+            return "during daylight"
+    except:
+        return "during daylight"  # default fallback
+
 def generate_weather_description(temp, is_raining):
-    prompt = f"Temperature: {temp}°F, Raining: {'Yes' if is_raining else 'No'}. Generate a humorous, Seattle-specific clothing recommendation under 100 characters."
+    time_context = get_time_context()
+    
+    prompt = f"""Context: Seattle weather conditions
+Temperature: {temp}°F
+Raining: {'Yes' if is_raining else 'No'}
+Time of day: {time_context}
+
+Generate a humorous, Seattle-specific clothing recommendation that considers the temperature, rain, and time of day. Keep it under 100 characters."""
     
     response = client.complete(
         messages=[
-            SystemMessage(content="You are a helpful Seattle weather assistant."),
+            SystemMessage(content="You are a helpful Seattle weather assistant who knows the local culture."),
             UserMessage(content=prompt),
         ],
-        temperature=0.9,  # Increase randomness
+        temperature=0.9,
         max_tokens=60,
         model=model_name
     )
