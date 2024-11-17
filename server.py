@@ -61,7 +61,8 @@ Generate ONE casual clothing recommendation for a Seattleite that:
             SystemMessage(content="You are a Seattle local who gives practical and witty weather advice, always considering safety and visibility."),
             UserMessage(content=prompt),
         ],
-        temperature=0.9,
+        temperature=1.0,  # Controls randomness
+        top_p=0.9,       # Controls diversity of word choice
         max_tokens=60,
         model=model_name
     )
