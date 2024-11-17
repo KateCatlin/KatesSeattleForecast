@@ -65,21 +65,10 @@ Lighting: {get_time_context()}
 
 Generate ONE casual clothing recommendation for a Seattleite that:
 - Considers temperature, rain, and whether it's dark out
-- References Seattle-specific clothing like:
-  * Puffy jackets (when cold)
-  * Ski jackets (when super cold)
-  * Rain shells (when raining)
-  * Fleece layers
-  * Flannel shirts
-  * Rain boots/hiking boots/winter boots/birkenstocks/running shoes
-  * Gore-tex gear
-  * Technical outdoor wear
-  * Beanies/caps
-  * Running shorts 
-- Includes appropriate lighting gear (headlamp/reflective gear for dark, sunglasses for day)
+- References Seattle-specific clothing
+- If relevant, includes appropriate lighting gear (headlamp/reflective gear for dark, sunglasses or a hat for a not-rainy day)
 - Is humorous and locally relevant
-- Stays under 100 characters
-- Incorporates the lighting gear naturally into the suggestion"""
+- Stays under 100 characters"""
     
         response = client.complete(
             messages=[
