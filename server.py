@@ -47,13 +47,18 @@ def generate_weather_description(temp, is_raining):
     prompt = f"""Context: Seattle weather conditions
 Temperature: {temp}°F
 Raining: {'Yes' if is_raining else 'No'}
-Time of day: {time_context}
+Lighting: {time_context}
 
-Generate a humorous, Seattle-specific clothing recommendation that considers the temperature, rain, and time of day. Keep it under 100 characters."""
+Generate ONE casual clothing recommendation for a Seattleite that:
+- Considers temperature and rain
+- Includes appropriate lighting gear (headlamp/reflective gear for dark, sunglasses for day)
+- Is humorous and locally relevant
+- Stays under 100 characters
+- Incorporates the lighting gear naturally into the suggestion"""
     
     response = client.complete(
         messages=[
-            SystemMessage(content="You are a helpful Seattle weather assistant who knows the local culture."),
+            SystemMessage(content="You are a Seattle local who gives practical and witty weather advice, always considering safety and visibility."),
             UserMessage(content=prompt),
         ],
         temperature=0.9,
