@@ -7,31 +7,37 @@ import json
 from ping_sunset import fetch_sunset_data
 import cohere
 from dotenv import load_dotenv
+from azure.ai.inference import ChatCompletionsClient
+from azure.ai.inference.models import SystemMessage, UserMessage
+from azure.core.credentials import AzureKeyCredential
 
 load_dotenv()
 
 app = Flask(__name__)
-client = cohere.Client(os.getenv('COHERE_API_KEY'))
+endpoint = "https://models.inference.ai.azure.com"
+model_name = "Cohere-command-r-plus"
+client = ChatCompletionsClient(
+    endpoint=endpoint,
+    credential=AzureKeyCredential(os.getenv('GITHUB_TOKEN')),
+)
+
+# Add to server.py temporarily
+print(f"GitHub token present: {'Yes' if os.getenv('GITHUB_TOKEN') else 'No'}")
 
 def generate_weather_description(temp, is_raining):
-    prompt = f"""Generate a casual, friendly one-sentence clothing recommendation for Seattle weather.
-    Current temperature: {temp}°F
-    Is it raining: {'Yes' if is_raining else 'No'}
-    Make it somewhat humorous and very specific to Seattle culture.
-    Keep it under 100 characters."""
-
-    # Using existing client setup
-    try:
-        response = client.generate(
-            model='command',  # GitHub's default model
-            prompt=prompt,
-            max_tokens=60,
-            temperature=0.7
-        )
-        return response.generations[0].text.strip()
-    except Exception as e:
-        print(f"Error generating description: {e}")
-        return "Dress for typical Seattle weather!"
+    prompt = f"Temperature: {temp}°F, Raining: {'Yes' if is_raining else 'No'}. Generate a humorous, Seattle-specific clothing recommendation under 100 characters."
+    
+    response = client.complete(
+        messages=[
+            SystemMessage(content="You are a helpful Seattle weather assistant."),
+            UserMessage(content=prompt),
+        ],
+        temperature=0.7,
+        max_tokens=60,
+        model=model_name
+    )
+    
+    return response.choices[0].message.content
 
 @app.route('/')
 def index():
