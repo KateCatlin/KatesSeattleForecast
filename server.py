@@ -50,7 +50,18 @@ Raining: {'Yes' if is_raining else 'No'}
 Lighting: {time_context}
 
 Generate ONE casual clothing recommendation for a Seattleite that:
-- Considers temperature and rain
+- Considers temperature, rain, and whether it's dark out
+- References Seattle-specific clothing like:
+  * Puffy jackets (when cold)
+  * Ski jackets (when super cold)
+  * Rain shells (when raining)
+  * Fleece layers
+  * Flannel shirts
+  * Rain boots/hiking boots/winter boots/birkenstocks/running shoes
+  * Gore-tex gear
+  * Technical outdoor wear
+  * Beanies/caps
+  * Running shorts 
 - Includes appropriate lighting gear (headlamp/reflective gear for dark, sunglasses for day)
 - Is humorous and locally relevant
 - Stays under 100 characters
