@@ -5,13 +5,13 @@ import os
 import pytz
 import json
 from ping_sunset import fetch_sunset_data
-from openai import OpenAI
+import cohere
 from dotenv import load_dotenv
 
 load_dotenv()
 
 app = Flask(__name__)
-client = OpenAI(api_key=os.getenv('OPENAI_API_KEY'))
+client = cohere.Client(os.getenv('COHERE_API_KEY'))
 
 def generate_weather_description(temp, is_raining):
     prompt = f"""Generate a casual, friendly one-sentence clothing recommendation for Seattle weather.
@@ -20,18 +20,18 @@ def generate_weather_description(temp, is_raining):
     Make it somewhat humorous and very specific to Seattle culture.
     Keep it under 100 characters."""
 
+    # Using existing client setup
     try:
-        response = client.chat.completions.create(
-            model="gpt-3.5-turbo",
-            messages=[{"role": "user", "content": prompt}],
+        response = client.generate(
+            model='command',  # GitHub's default model
+            prompt=prompt,
             max_tokens=60,
             temperature=0.7
         )
-        return response.choices[0].message.content.strip()
+        return response.generations[0].text.strip()
     except Exception as e:
-        print(f"Error generating AI description: {e}")
-        # Fallback to basic recommendation
-        return "Dress for typical Seattle weather!" 
+        print(f"Error generating description: {e}")
+        return "Dress for typical Seattle weather!"
 
 @app.route('/')
 def index():
