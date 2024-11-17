@@ -32,7 +32,7 @@ def generate_weather_description(temp, is_raining):
             SystemMessage(content="You are a helpful Seattle weather assistant."),
             UserMessage(content=prompt),
         ],
-        temperature=0.7,
+        temperature=0.9,  # Increase randomness
         max_tokens=60,
         model=model_name
     )
@@ -43,6 +43,7 @@ def generate_weather_description(temp, is_raining):
 def index():
     return render_template('index.html')
 
+# Add no-cache headers to weather_json route
 @app.route('/weather.json')
 def weather_json():
     try:
@@ -85,7 +86,10 @@ def weather_json():
             "clothing_recommendation": clothing
         }
         
-        return jsonify(weather_data)
+        response = jsonify(weather_data)
+        response.headers['Cache-Control'] = 'no-store, no-cache, must-revalidate, max-age=0'
+        response.headers['Pragma'] = 'no-cache'
+        return response
         
     except Exception as e:
         print("Error fetching weather:", str(e))  # Debug log
