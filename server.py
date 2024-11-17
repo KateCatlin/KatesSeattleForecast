@@ -59,24 +59,8 @@ def weather_json():
         temp = data['current']['temperature_2m']
         is_raining = data['current']['precipitation'] > 0
         
-        # Replace the static clothing recommendations with AI-generated ones
+        # Get the AI clothing recommendation without modifications
         clothing = generate_weather_description(temp, is_raining)
-            
-        # Get sunset data
-        try:
-            with open('sunset.json', 'r') as f:
-                sunset_data = json.load(f)
-                
-            # Add lighting recommendation based on sunset
-            if sunset_data.get('results', {}).get('time_until_sunset') == 'after_sunset':
-                clothing += " Also it's dark, bring a headlamp."
-            elif sunset_data.get('results', {}).get('minutes_until_sunset', float('inf')) <= 30:
-                clothing += " Also, it's getting dark out, you may want to bring a headlamp."
-            elif not is_raining:
-                clothing += " Wear your sunglasses."
-                
-        except (FileNotFoundError, json.JSONDecodeError):
-            pass  # If sunset data isn't available, skip the lighting recommendation
             
         weather_data = {
             "current_time": seattle_time.isoformat(),
@@ -95,13 +79,21 @@ def weather_json():
         print("Error fetching weather:", str(e))  # Debug log
         return jsonify({"error": str(e)}), 500
 
+# In server.py, add debug prints
 @app.route('/sunset.json')
 def get_sunset():
     try:
         with open('sunset.json', 'r') as f:
-            return jsonify(json.load(f))
+            data = json.load(f)
+            # Add debug prints
+            seattle_tz = pytz.timezone('America/Los_Angeles')
+            current_time = datetime.now(seattle_tz)
+            print(f"Current time (Seattle): {current_time}")
+            print(f"Sunset data: {json.dumps(data, indent=2)}")
+            return jsonify(data)
     except FileNotFoundError:
         data = fetch_sunset_data()
+        print(f"Fresh sunset data: {json.dumps(data, indent=2)}")
         return jsonify(data if data else {"error": "Unable to fetch sunset data"})
 
 if __name__ == "__main__":
