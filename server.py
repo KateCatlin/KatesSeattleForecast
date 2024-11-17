@@ -20,9 +20,6 @@ client = ChatCompletionsClient(
     credential=AzureKeyCredential(os.getenv('GITHUB_TOKEN')),
 )
 
-# Add to server.py temporarily
-print(f"GitHub token present: {'Yes' if os.getenv('GITHUB_TOKEN') else 'No'}")
-
 def get_time_context():
     try:
         sunset_data = fetch_sunset_data()  # Get fresh data
