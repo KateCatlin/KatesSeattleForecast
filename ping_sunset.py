@@ -1,6 +1,6 @@
 import requests
 import pytz
-from datetime import datetime
+from datetime import datetime, timedelta
 
 def fetch_sunset_data():
     url = "https://api.sunrise-sunset.org/json?lat=47.6062&lng=-122.3321&formatted=0"
@@ -12,6 +12,10 @@ def fetch_sunset_data():
     
     sunrise_time = datetime.fromisoformat(data['results']['sunrise']).astimezone(seattle_tz)
     sunset_time = datetime.fromisoformat(data['results']['sunset']).astimezone(seattle_tz)
+    
+    # Ensure sunset time is for the same day as current time
+    if sunset_time.date() < current_time.date():
+        sunset_time += timedelta(days=1)
     
     minutes_until_sunset = (sunset_time - current_time).total_seconds() / 60
     minutes_until_sunrise = (sunrise_time - current_time).total_seconds() / 60
