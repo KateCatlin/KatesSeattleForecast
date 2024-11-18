@@ -143,6 +143,14 @@
             <h3>Time Until Sunset</h3>
             <p id="time-until-sunset"></p>
         </div>
+        <div class="subsection">
+            <h3>Sunrise Time</h3>
+            <p id="sunrise-time"></p>
+        </div>
+        <div class="subsection">
+            <h3>Time Until Sunrise</h3>
+            <p id="time-until-sunrise"></p>
+        </div>
     </div>
 
     <script>
@@ -163,6 +171,9 @@
             let tempStr = 'Unavailable';
             let rainStr = 'Unknown';
             let sunsetStr = 'Unavailable';
+            let sunriseStr = 'Unavailable';
+            let timeUntilSunsetStr = 'Unavailable';
+            let timeUntilSunriseStr = 'Unavailable';
 
             // Handle weather data
             if (weatherData.current_time) {
@@ -180,8 +191,15 @@
             }
             
             // Handle sunset data
-            if (sunsetData.results && sunsetData.results.sunset) {
-                sunsetStr = sunsetData.results.sunset;
+            if (sunsetData.results) {
+                sunsetStr = sunsetData.results.sunset_time;
+                sunriseStr = sunsetData.results.sunrise_time;
+                timeUntilSunsetStr = sunsetData.results.time_until_sunset === 'before_sunset' 
+                    ? `${Math.floor(sunsetData.results.minutes_until_sunset / 60)} hours and ${Math.round(sunsetData.results.minutes_until_sunset % 60)} minutes until sunset`
+                    : 'The sun has already set!';
+                timeUntilSunriseStr = sunsetData.results.time_until_sunrise === 'before_sunrise' 
+                    ? `${Math.floor(sunsetData.results.minutes_until_sunrise / 60)} hours and ${Math.round(sunsetData.results.minutes_until_sunrise % 60)} minutes until sunrise`
+                    : 'The sun has already risen!';
             }
 
             if (typeof weatherData.current_temperature === 'number') {
@@ -197,6 +215,9 @@
             document.getElementById('temperature').innerText = tempStr;
             document.getElementById('rain-status').innerText = rainStr;
             document.getElementById('sunset-time').innerText = sunsetStr;
+            document.getElementById('time-until-sunset').innerText = timeUntilSunsetStr;
+            document.getElementById('sunrise-time').innerText = sunriseStr;
+            document.getElementById('time-until-sunrise').innerText = timeUntilSunriseStr;
 
             // Handle time until sunset
             if (sunsetData.results) {
@@ -231,6 +252,44 @@
             console.error('Error:', error);
             document.getElementById('recommendation-text').innerHTML = 
                 '<span class="error">Failed to load weather data</span>';
+        });
+
+        // Fetch weather data
+        Promise.all([
+            fetch('/weather.json'),
+            fetch('/sunset.json')
+        ])
+        .then(async ([weatherResponse, sunsetResponse]) => {
+            if (weatherResponse.status === 202) {
+                setTimeout(() => location.reload(), 1000); // Retry after 1s
+                return;
+            }
+            const weatherData = await weatherResponse.json();
+            const sunsetData = await sunsetResponse.json();
+            
+            let timeStr = 'Unavailable';
+            let tempStr = 'Unavailable';
+            let rainStr = 'Unknown';
+            let sunsetStr = 'Unavailable';
+            let sunriseStr = 'Unavailable';
+            let timeUntilSunsetStr = 'Unavailable';
+            let timeUntilSunriseStr = 'Unavailable';
+
+            if (sunsetData.results) {
+                sunsetStr = sunsetData.results.sunset_time;
+                sunriseStr = sunsetData.results.sunrise_time;
+                timeUntilSunsetStr = sunsetData.results.time_until_sunset === 'before_sunset' 
+                    ? `${Math.floor(sunsetData.results.minutes_until_sunset / 60)} hours and ${Math.round(sunsetData.results.minutes_until_sunset % 60)} minutes until sunset`
+                    : 'The sun has already set!';
+                timeUntilSunriseStr = sunsetData.results.time_until_sunrise === 'before_sunrise' 
+                    ? `${Math.floor(sunsetData.results.minutes_until_sunrise / 60)} hours and ${Math.round(sunsetData.results.minutes_until_sunrise % 60)} minutes until sunrise`
+                    : 'The sun has already risen!';
+            }
+
+            document.getElementById('sunset-time').textContent = sunsetStr;
+            document.getElementById('time-until-sunset').textContent = timeUntilSunsetStr;
+            document.getElementById('sunrise-time').textContent = sunriseStr;
+            document.getElementById('time-until-sunrise').textContent = timeUntilSunriseStr;
         });
     </script>
 </body>

@@ -42,11 +42,15 @@ def get_time_context():
 
         time_until_sunset = sunset_data.get('results', {}).get('time_until_sunset')
         minutes_until_sunset = sunset_data.get('results', {}).get('minutes_until_sunset')
+        time_until_sunrise = sunset_data.get('results', {}).get('time_until_sunrise')
+        minutes_until_sunrise = sunset_data.get('results', {}).get('minutes_until_sunrise')
         
         if time_until_sunset == 'after_sunset':
             return "after sunset"
         elif minutes_until_sunset and minutes_until_sunset <= 30:
             return "near sunset"
+        elif time_until_sunrise == 'before_sunrise':
+            return "before sunrise"
         else:
             return "during daylight"
     except:
