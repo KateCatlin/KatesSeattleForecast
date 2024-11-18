@@ -92,7 +92,10 @@ def index():
 @app.route('/weather.json')
 def weather_json():
     try:
+        # Pre-warm cache
         data = get_weather_with_cache()
+        sunset_data = get_cached_sunset()
+        
         # Rest of your code
         # Get current time in Seattle
         seattle_tz = pytz.timezone('America/Los_Angeles')
@@ -118,8 +121,7 @@ def weather_json():
         return response
         
     except Exception as e:
-        print("Error fetching weather:", str(e))  # Debug log
-        return jsonify({"error": str(e)}), 500
+        return jsonify({"error": "Loading data..."}), 202  # 202 Accepted
 
 # In server.py, add debug prints
 @app.route('/sunset.json')

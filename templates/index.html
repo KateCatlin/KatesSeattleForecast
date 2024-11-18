@@ -152,6 +152,10 @@
             fetch('/sunset.json')
         ])
         .then(async ([weatherResponse, sunsetResponse]) => {
+            if (weatherResponse.status === 202) {
+                setTimeout(() => location.reload(), 1000); // Retry after 1s
+                return;
+            }
             const weatherData = await weatherResponse.json();
             const sunsetData = await sunsetResponse.json();
             
